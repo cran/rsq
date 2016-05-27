@@ -1,0 +1,11 @@
+3983e8c9d679923f607086e885084b14 *DESCRIPTION
+eb7f383d5e516e4527d945332662ea21 *NAMESPACE
+b23b2c5adf3c4a659c8b872b0164b487 *R/rsq.R
+c9769f2184399d7637845c50f5d2c055 *data/hcrabs.rda
+67913f09fba7060db722dc9be0d11e27 *data/lifetime.rda
+03cf27abd18e16e7b802953b7ea8cae9 *man/calcqvdist.Rd
+7d8c412b80f149d4d7f18bdd8db25721 *man/hcrabs.Rd
+f575c448b8ecc86aea599729895f2e07 *man/lifetime.Rd
+a183f1f987a94259acf57bbb96093ffa *man/rsq.Rd
+98e2d730c9d71e315ff57d3f5eebc469 *man/rsq.partial.Rd
+190ac1a2a056cc47c8a025458101ac40 *man/vrsq.Rd

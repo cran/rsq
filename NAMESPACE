@@ -1,0 +1,3 @@
+importFrom("methods", "is")
+importFrom("stats","family","integrate","model.response","terms","update")
+exportPattern("^[[:alpha:]]+")
