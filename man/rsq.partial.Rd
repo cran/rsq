@@ -27,7 +27,7 @@ Returned values include \code{adjustment} and \code{partial.rsq}. When \code{obj
 \item{partial.rsq}{ partial R^2 or the adjusted partial R^2.}
 }
 \references{
-Zhang, D. (2006). A coefficient of determination for generalized linear models. \emph{The American Statistician}, tentatively accepted.
+Zhang, D. (2016). A coefficient of determination for generalized linear models. \emph{The American Statistician}, tentatively accepted.
 }
 \author{Dabao Zhang, Department of Statistics, Purdue University}
 \seealso{

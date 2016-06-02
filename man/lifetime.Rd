@@ -16,7 +16,7 @@ There are 27 tests in each of the two environments.
   }
 }
 \details{
-This data set is discussed by Want et al. (1992).
+This data set is discussed by Wang et al. (1992).
 }
 \source{
 Wang, H., Ma, B., and Shi, J. (1992). Estimation of environmental factors for the inverse gaussian distribution. \emph{Microelectron. Reliab.}, 32: 931-934.

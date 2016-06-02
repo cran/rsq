@@ -4,15 +4,15 @@ rsq<-function(fitObj,adj=FALSE)
 {
   if( is(fitObj,"glm") )
   {
-    y <- model.response(fitObj$model)
-    yfit1 <- fitObj$fitted.values
-    p <- fitObj$rank
-    df.int <- if(attr(fitObj$terms,"intercept")) 1L else 0L
+    sse1 <- vsse(fitObj)
                
-    tfit0 <- update(fitObj,.~1)
-    yfit0 <- tfit0$fitted.values
- 
-    vrsq(y,yfit0,yfit1,family=family(fitObj)$family,adj=adj,df.int,p)
+    fitObj0 <- update(fitObj,.~1)
+    sse0 <- vsse(fitObj0)
+    
+    if(adj)
+      rsq <- 1-(sse1/summary(fitObj)$df.residual)/(sse0/summary(fitObj0)$df.residual)
+    else
+      rsq <- 1-sse1/sse0
   }
   else if( is(fitObj,"lm") )
   {
@@ -23,100 +23,7 @@ rsq<-function(fitObj,adj=FALSE)
   }
   else
     warning("Unsupported object!")
-}
 
-
-# Calculate the variance-based distance for quardratic variance functions:
-#           V(mu) = v2*mu^2+v1*mu+v0
-calcqvdist<-function(a,b,v2,v1)
-{
-  vpa <- 2*v2*a+v1
-  svpa2 <- sqrt(1+vpa*vpa)
-  
-  vpb <- 2*v2*b+v1
-  svpb2 <- sqrt(1+vpb*vpb)
-  
-  dv <- (log((vpb+svpb2)/(vpa+svpa2))+vpb*svpb2-vpa*svpa2)/(4*v2)
-  dv <- dv*dv
-}
-
-# Calculate variance-based R^2 using observed & fitted response values
-vrsq<-function(y,yfit0,yfit1,family="binomial",adj=FALSE,df.int=1,p=1)
-{
-  switch(family,
-     binomial=         # V(mu) = mu*(1-mu)
-     {
-       v2 <- -1
-       v1 <- 1
-       if(ncol(as.matrix(y))>1)
-       {
-         rsq <- (calcqvdist(1,yfit1,v2,v1)%*%y[,1]+calcqvdist(0,yfit1,v2,v1)%*%y[,2])/
-                (calcqvdist(1,yfit0,v2,v1)%*%y[,1]+calcqvdist(0,yfit0,v2,v1)%*%y[,2])
-         n <- sum(y)
-       } 
-       else
-       {
-         rsq <- sum(calcqvdist(y,yfit1,v2,v1))/sum(calcqvdist(y,yfit0,v2,v1))
-         n <- length(y)
-       }
-     }, 
-     gaussian=         # V(mu) = 1
-     {
-       rsq <- sum((y-yfit1)^2)/sum((y-yfit0)^2)
-       n <- length(y)
-     },
-     Gamma=            # V(mu) = mu*mu
-     {
-       v2 <- 1
-       v1 <- 0
-       rsq <- sum(calcqvdist(y,yfit1,v2,v1))/sum(calcqvdist(y,yfit0,v2,v1))
-       n <- length(y)
-     },
-     inverse.gaussian=     # V(mu) = mu*mu*mu
-     {
-       tint <- function(x){integrate(function(mu){mu*mu*mu},x[1],x[2])$value}
-       nv <- cbind(y,yfit1)
-       dv <- cbind(y,yfit0)
-       rsq <- sum(apply(nv,1,tint))/sum(apply(dv,1,tint))
-       n <- length(y)
-     },
-     poisson=          # V(mu) = mu
-     {
-       rsq <- sum((y-yfit1)^2)/sum((y-yfit0)^2)
-       n <- length(y)
-     },
-     quasibinomial=    # V(mu) = phi*mu*(1-mu)
-     {
-       v2 <- -1
-       v1 <- 1
-       rsq <- sum(calcqvdist(y,yfit1,v2,v1))/sum(calcqvdist(y,yfit0,v2,v1))
-       n <- length(y)
-     },
-     quasipoisson=     # V(mu) = phi*mu
-     {
-       rsq <- sum((y-yfit1)^2)/sum((y-yfit0)^2)
-       n <- length(y)
-     },
-     quasi=            # V(mu) specified by variance including varfun?
-     {
-       warning("Not Implemented!")
-     }
-  )
-  
-  if(pmatch("Negative Binomial",family,nomatch=F)) 
-  {
-    # V(mu) = mu+mu*mu
-    v2 <- 1
-    v1 <- 1
-    rsq <- sum(calcqvdist(y,yfit1,v2,v1))/sum(calcqvdist(y,yfit0,v2,v1))
-    n <- length(y)
-  }
-  
-  if(adj)
-    rsq <- 1-rsq*(n-df.int)/(n-p)
-  else
-    rsq <- 1-rsq
-  
   rsq
 }
 
@@ -145,3 +52,119 @@ rsq.partial<-function(objF,objR=NULL,adj=FALSE)
     list(adjustment=adj,variable=attr(terms(objF),"term.labels"), partial.rsq=prsq)
   }
 }
+
+# Calculate the sum of squared errors
+vsse<-function(fitObj)
+{
+  yyfit <- cbind(model.response(fitObj$model),fitObj$fitted.values)
+
+  if( (family(fitObj)$family=="binomial")&(ncol(as.matrix(yyfit))>2) )
+  {
+    rsse <- function(x){
+      tres<-vresidual(x[1:2],x[-(1:2)],family=family(fitObj)$family)
+      rsse<-sum((tres^2)*x)
+    }
+    vsse <- sum(apply(yyfit,1,rsse))
+  }
+  else if(pmatch("Negative Binomial",family(fitObj)$family,nomatch=F))
+  {
+    tresid <- function(x){vresidual.nb(x[1],x[2],fitObj$theta)}
+    vsse <- sum(apply(yyfit,1,tresid)^2)
+  }
+  #else if( family(fitObj)$family=="quasi" )
+  #{ # Note that we need to specify the first order derivative of the variance function
+  #  tresid <- function(x){vresidual.quasi(x[1],x[2],variancep=family(fitObj)$variancep)}
+  #  vsse <- sum(apply(yyfit,1,tresid)^2)
+  #}
+  else
+  {
+    tresid <- function(x){vresidual(x[1],x[2],family=family(fitObj)$family)}
+    vsse <- sum(apply(yyfit,1,tresid)^2)
+  }
+  
+  vsse
+}
+
+# Calculate the residual for given observed y and its fitted value yfit: 
+# the length between y and yfit along the quardratic variance function:
+#           V(mu) = v2*mu^2+v1*mu+v0
+qvresidual<-function(y,yfit,v2,v1)
+{
+  vpa <- 2*v2*yfit+v1
+  svpa2 <- sqrt(1+vpa*vpa)
+  
+  vpb <- 2*v2*y+v1
+  svpb2 <- sqrt(1+vpb*vpb)
+  
+  vr <- (log((vpb+svpb2)/(vpa+svpa2))+vpb*svpb2-vpa*svpa2)/(4*v2)
+  vr
+}
+
+# Calculate the residual for given observed y and its fitted value yfit
+vresidual<-function(y,yfit,family="binomial")
+{
+  vresidual <- 0
+  switch(family,
+    binomial=         # V(mu) = mu*(1-mu)
+    {
+      v2 <- -1
+      v1 <- 1
+      if(ncol(as.matrix(y))>1)
+        vresidual <- c(qvresidual(1,yfit,v2,v1), qvresidual(0,yfit,v2,v1))
+      else
+        vresidual <- qvresidual(y,yfit,v2,v1)
+    }, 
+    gaussian=         # V(mu) = 1
+    {
+      vresidual <- y-yfit
+    },
+    Gamma=            # V(mu) = mu*mu
+    {
+      v2 <- 1
+      v1 <- 0
+      vresidual <- qvresidual(y,yfit,v2,v1)
+    },
+    inverse.gaussian=     # V(mu) = mu*mu*mu
+    {
+      vresidual <- integrate(function(mu){sqrt(1+9*mu^4)},yfit,y)$value;
+    },
+    poisson=          # V(mu) = mu
+    {
+      vresidual <- y-yfit
+    },
+    quasibinomial=    # V(mu) = mu*(1-mu)
+    {
+      v2 <- -1
+      v1 <- 1
+      vresidual <- qvresidual(y,yfit,v2,v1)
+    },
+    quasipoisson=     # V(mu) = mu
+    {
+      vresidual <- y-yfit
+    },
+    quasi=            # V(mu) specified by variance including varfun?
+    {
+      warning("Not Implemented!")
+    })
+
+  vresidual
+}
+
+# Calculate the residual for given observed y and its fitted value yfit
+# for the negative binomial model
+vresidual.nb<-function(y,yfit,theta=1)
+{
+  # V(mu) = mu+mu*mu/theta
+  v2 <- 1/theta
+  v1 <- 1
+  vresidual <- qvresidual(y,yfit,v2,v1)
+
+  vresidual
+}
+
+# Calculate the residual for given observed y and its fitted value yfit for quasi models
+#vresidual.quasi(y, yfit,variancep=function(mu){1},dispersion=1)
+#{
+#  vresidual <- integrate(function(mu){sqrt(1+variancep(mu)^2)},yfit,y)$value;
+#  vresidual
+#}

@@ -12,7 +12,7 @@ The R^2 relies on the variance function, and reduces to the traditional R^2 when
 }
 \value{The R^2 or adjusted R^2.}
 \references{
-Zhang, D. (2006). A coefficient of determination for generalized linear models. \emph{The American Statistician}, tentatively accepted.
+Zhang, D. (2016). A coefficient of determination for generalized linear models. \emph{The American Statistician}, tentatively accepted.
 }
 \author{Dabao Zhang, Department of Statistics, Purdue University}
 \seealso{
