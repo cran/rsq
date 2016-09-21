@@ -38,12 +38,10 @@ bnfit <- glm(y~color+spine+width+weight,family=binomial)
 rsq(bnfit)
 rsq(bnfit,adj=TRUE)
 rsq.partial(bnfit)
-rsq.partial(bnfit,adj=TRUE)
 
 quasips <- glm(num.satellites~color+spine+width+weight,family=quasipoisson)
 rsq(quasips)
 rsq(quasips,adj=TRUE)
 rsq.partial(quasips)
-rsq.partial(quasips,adj=TRUE)
 }
 \keyword{datasets}

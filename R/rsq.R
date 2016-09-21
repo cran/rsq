@@ -56,30 +56,28 @@ rsq.partial<-function(objF,objR=NULL,adj=FALSE)
 # Calculate the sum of squared errors
 vsse<-function(fitObj)
 {
-  yyfit <- cbind(model.response(fitObj$model),fitObj$fitted.values)
+  y <- model.response(fitObj$model)
+  yfit <- fitObj$fitted.values
 
-  if( (family(fitObj)$family=="binomial")&(ncol(as.matrix(yyfit))>2) )
+  if( (family(fitObj)$family=="binomial")&(ncol(as.matrix(y))>1) )
   {
-    rsse <- function(x){
-      tres<-vresidual(x[1:2],x[-(1:2)],family=family(fitObj)$family)
-      rsse<-sum((tres^2)*x)
-    }
-    vsse <- sum(apply(yyfit,1,rsse))
+    tzeros <- double(length=length(yfit))
+    vsse <- sum(y[,1]*vresidual(tzeros+1,yfit,family=family(fitObj)$family)^2+
+                y[,2]*vresidual(tzeros,yfit,family=family(fitObj)$family)^2)
   }
   else if(pmatch("Negative Binomial",family(fitObj)$family,nomatch=F))
   {
-    tresid <- function(x){vresidual.nb(x[1],x[2],fitObj$theta)}
-    vsse <- sum(apply(yyfit,1,tresid)^2)
+    vsse <- sum(vresidual.nb(y,yfit,fitObj$theta)^2)
   }
   #else if( family(fitObj)$family=="quasi" )
   #{ # Note that we need to specify the first order derivative of the variance function
   #  tresid <- function(x){vresidual.quasi(x[1],x[2],variancep=family(fitObj)$variancep)}
-  #  vsse <- sum(apply(yyfit,1,tresid)^2)
+  #  vsse <- sum(apply(cbind(y,yfit),1,tresid)^2)
   #}
   else
   {
     tresid <- function(x){vresidual(x[1],x[2],family=family(fitObj)$family)}
-    vsse <- sum(apply(yyfit,1,tresid)^2)
+    vsse <- sum(apply(cbind(y,yfit),1,tresid)^2)
   }
   
   vsse

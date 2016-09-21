@@ -30,7 +30,7 @@ attach(lifetime)
 igfit <- glm(time~env,family=inverse.gaussian)
 rsq(igfit)
 rsq(igfit,adj=TRUE)
+
 rsq.partial(igfit)
-rsq.partial(igfit,adj=TRUE)
 }
 \keyword{datasets}

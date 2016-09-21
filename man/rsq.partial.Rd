@@ -39,19 +39,15 @@ attach(hcrabs)
 y <- ifelse(num.satellites>0,1,0)
 bnfit <- glm(y~color+spine+width+weight,family=binomial)
 rsq.partial(bnfit)
-rsq.partial(bnfit,adj=TRUE)
 
 bnfitr <- glm(y~color+weight,family=binomial)
 rsq.partial(bnfit,bnfitr)
-rsq.partial(bnfit,bnfitr,adj=TRUE)
 
 quasibn <- glm(y~color+spine+width+weight,family=quasibinomial)
 rsq.partial(quasibn)
-rsq.partial(quasibn,adj=TRUE)
 
 quasibnr <- glm(y~color+weight,family=binomial)
 rsq.partial(quasibn,quasibnr)
-rsq.partial(quasibn,quasibnr,adj=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
