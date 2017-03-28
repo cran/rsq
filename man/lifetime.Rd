@@ -2,7 +2,7 @@
 \alias{lifetime}
 \docType{data}
 \title{
-Test Results of Lifetime in Two Different Environments.
+Lifetimes in Two Different Environments.
 }
 \description{
 There are 27 tests in each of the two environments.
@@ -21,7 +21,10 @@ This data set is discussed by Wang et al. (1992).
 \source{
 Wang, H., Ma, B., and Shi, J. (1992). Estimation of environmental factors for the inverse gaussian distribution. \emph{Microelectron. Reliab.}, 32: 931-934.
 }
-\examples{
+\author{Dabao Zhang, Department of Statistics, Purdue University}
+\seealso{
+\code{\link{rsq}, \link{rsq.partial}, \link{pcor}, \link{simglm}}.
+}\examples{
 data(lifetime)
 summary(lifetime)
 head(lifetime)

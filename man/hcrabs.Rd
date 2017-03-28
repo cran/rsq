@@ -27,6 +27,10 @@ Agresti, A. (2012). \emph{An Introduction to Categorical Data Analysis}, 3rd edi
 \references{
 Brockmann, H. J. (1996). Satellite male groups in horseshoe crabs. \emph{Limulus polyphemus. Ethology}, 102: 1-21.
 }
+\author{Dabao Zhang, Department of Statistics, Purdue University}
+\seealso{
+\code{\link{rsq}, \link{rsq.partial}, \link{pcor}, \link{simglm}}.
+}
 \examples{
 data(hcrabs)
 summary(hcrabs)

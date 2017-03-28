@@ -24,6 +24,10 @@ Some school administrators studied the attendance behavior of high school junior
 \source{
 \url{http://www.ats.ucla.edu/stat/sas/dae/negbinreg.htm}
 }
+\author{Dabao Zhang, Department of Statistics, Purdue University}
+\seealso{
+\code{\link{rsq}, \link{rsq.partial}, \link{pcor}, \link{simglm}}.
+}
 \examples{
 data(hschool)
 summary(hschool)

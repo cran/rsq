@@ -1,3 +1,5 @@
 importFrom("methods", "is")
 importFrom("stats","family","integrate","model.response","terms","update")
+importFrom("stats","glm","logLik","rbinom","rgamma","rnorm","rpois","weights")
+importFrom("MASS",'negative.binomial')
 exportPattern("^[[:alpha:]]+")

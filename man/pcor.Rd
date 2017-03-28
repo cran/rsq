@@ -1,25 +1,25 @@
-\name{rsq.partial}
-\alias{rsq.partial}
+\name{pcor}
+\alias{pcor}
 \title{
-Partial R-Squared for Generalized Linear Models
+Partial Correlation for Generalized Linear Models
 }
 \description{
-Calculate the coefficient of partial determination, aka partial R^2, for both linear and generalized linear models.
+Calculate the partial correlation for both linear and generalized linear models.
 }
 \usage{
-rsq.partial(objF,objR=NULL,adj=FALSE,type=c('v','kl','sse','lr','n'))
+pcor(objF,objR=NULL,adj=FALSE,type=c('v','kl','sse','lr','n'))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{objF}{  an object of class "lm" or "glm", a result of a call to \link{lm}, \link{glm}, or \link{glm.nb} to fit the full model.}
   \item{objR}{  an object of class "lm" or "glm", a result of a call to \link{lm}, \link{glm}, or \link{glm.nb} to fit the reduced model.}
   \item{adj}{ logical; if TRUE, calculate the adjusted partial R^2.}
-  \item{type}{  the type of R-squared:
+  \item{type}{  the type of R-squared used:
   
   'v' (default) -- variance-function-based (Zhang, 2016), calling \link{rsq.v};
   
   'kl' -- KL-divergence-based (Cameron and Windmeijer, 1997), calling \link{rsq.kl}; 
-
+  
   'sse' -- SSE-based (Efron, 1978), calling \link{rsq.sse}; 
   
   'lr' -- likelihood-ratio-based (Maddala, 1983; Cox and Snell, 1989; Magee, 1990), calling \link{rsq.lr}; 
@@ -27,15 +27,10 @@ rsq.partial(objF,objR=NULL,adj=FALSE,type=c('v','kl','sse','lr','n'))
   'n' -- corrected version of 'lr' (Nagelkerke, 1991), calling \link{rsq.n}.}
 }
 \details{
-When the fitting object of the reduced model is not specified, the partial R^2 of each term in the model will be calculated.
+When the fitting object of the reduced model is not specified, the partial correlation of each covariate (excluding factor covariates with more than two levels) in the model will be calculated.
 }
 \value{
-Returned values include \code{adjustment} and \code{partial.rsq}. When \code{objR} is not \code{NULL}, \code{variable.full} and \code{variable.reduced} are returned; otherwise \code{variable} is returned.
-\item{adjustment}{ logical; if TRUE, calculate the adjusted partial R^2.}
-\item{variable.full}{ all covariates in the full model.}
-\item{variable.reduced}{ all covariates in the reduced model.}
-\item{variable}{ all covariates in the full model.}
-\item{partial.rsq}{ partial R^2 or the adjusted partial R^2.}
+The partial correlation coefficient is returned.
 }
 \references{
 Cameron, A. C. and Windmeijer, A. G. (1997) An R-squared measure of goodness of fit for some common nonlinear regression models. \emph{Journal of Econometrics}, 77: 329-342.
@@ -54,7 +49,7 @@ Zhang, D. (2016). A coefficient of determination for generalized linear models. 
 }
 \author{Dabao Zhang, Department of Statistics, Purdue University}
 \seealso{
-\code{\link{rsq}, \link{pcor}}.
+\code{\link{rsq}, \link{rsq.partial}}.
 }
 \examples{
 data(hcrabs)
