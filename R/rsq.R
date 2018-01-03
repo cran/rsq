@@ -28,8 +28,8 @@ rsq.partial<-function(objF,objR=NULL,adj=FALSE,type=c('v','kl','sse','lr','n'))
   if( !is.null(objR) )
   {
     rsqR <- rsq(objR,adj=FALSE,type=type)
-    prsq <- 1-((1-rsqF)/(1-rsqR))*ifelse(adj,tfit$df.residual/objF$df.residual,1)
-
+    prsq <- 1-((1-rsqF)/(1-rsqR))*ifelse(adj,objR$df.residual/objF$df.residual,1)
+    
     list(adjustment=adj,variables.full=attr(terms(objF),"term.labels"),
          variables.reduced=attr(terms(objR),"term.labels"),partial.rsq=prsq)
   }
@@ -126,7 +126,8 @@ rsq.v<-function(fitObj,adj=FALSE)
   }
   
   # Calculate the residual for given observed y and its fitted value yfit
-  vresidual<-function(y,yfit,family="binomial")
+  # theta is the additional parameter, e.g., in negative binomial
+  vresidual<-function(y,yfit,family="binomial",theta=1)
   {
     vresidual <- 0
     switch(family,
@@ -144,8 +145,8 @@ rsq.v<-function(fitObj,adj=FALSE)
         vresidual <- qvresidual(y,yfit,v2,v1) },
       inverse.gaussian={    # V(mu) = mu*mu*mu
         vresidual <- integrate(function(mu){sqrt(1+9*mu^4)},yfit,y)$value },
-      negative.binomial={   # V(mu)=mu+mu*mu for Y/theta
-        v2 <- 1
+      negative.binomial={   # V(mu)=mu+mu*mu/theta
+        v2 <- 1/theta
         v1 <- 1
         vresidual <- qvresidual(y,yfit,v2,v1) },
       poisson={        # V(mu) = mu
@@ -175,19 +176,21 @@ rsq.v<-function(fitObj,adj=FALSE)
                       as.numeric(gsub("(?<=\\()[^()]*(?=\\))(*SKIP)(*F)|.","",
                                       family(fitObj)$family, perl=T)),
                       fitObj$theta)
-      tresid <- function(x){vresidual(x[1],x[2],family="negative.binomial")}
-      vsse <- sum(weights(fitObj)*apply(cbind(y/theta,yfit/theta),1,tresid)^2)
+      tresid <- function(x){vresidual(x[1],x[2],family="negative.binomial",theta=theta)}
+      #vsse <- sum(weights(fitObj)*apply(cbind(y/theta,yfit/theta),1,tresid)^2)
     }
     else
     {
       tresid <- function(x){vresidual(x[1],x[2],family=family(fitObj)$family)}
-      vsse <- sum(weights(fitObj)*apply(cbind(y,yfit),1,tresid)^2)
+      #vsse <- sum(weights(fitObj)*apply(cbind(y,yfit),1,tresid)^2)
     }
-
+    vsse <- sum(weights(fitObj)*apply(cbind(y,yfit),1,tresid)^2)
+    
     vsse
   }
   
-  if( is(fitObj,"negbin") )
+  #if( is(fitObj,"negbin") )
+  if(pmatch("Negative Binomial",family(fitObj)$family,nomatch=F))
   {
     sse1 <- vsse(fitObj)
     theta <- ifelse(is.null(fitObj$theta),
@@ -370,3 +373,4 @@ simglm<-function(family=c("binomial", "gaussian", "poisson","Gamma"),lambda=3,n=
     #  y <- rnbinom(n,size=2,mu=mu)
     #  list(yx=data.frame(y=y,x=x[,-1]),beta=beta)})
 }
+
