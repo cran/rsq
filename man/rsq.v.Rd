@@ -2,10 +2,11 @@
 \alias{rsq.v}
 \title{Variance-Function-Based R-Squared}
 \description{Calculate the variance-function-based R-squared for generalized linear models.}
-\usage{rsq.v(fitObj,adj=FALSE)}
+\usage{rsq.v(fitObj,adj=FALSE,data=NULL)}
 \arguments{
     \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
+    \item{data}{an optional data frame used by fitObj.}
 }
 \details{
 The R^2 relies on the variance function, and is well-defined for quasi models. It reduces to the classical R^2 when the variance function is constant or linear.

@@ -2,7 +2,7 @@
 \alias{rsq}
 \title{R-Squared for Generalized Linear Models}
 \description{Calculate the coefficient of determination, aka R^2, for  both linear and generalized linear models.}
-\usage{rsq(fitObj,adj=FALSE,type=c('v','kl','sse','lr','n'))}
+\usage{rsq(fitObj,adj=FALSE,type=c('v','kl','sse','lr','n'),data=NULL)}
 \arguments{
     \item{fitObj}{ an object of class "lm" or "glm", usually a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
@@ -17,6 +17,7 @@
         'lr' -- likelihood-ratio-based (Maddala, 1983; Cox and Snell, 1989; Magee, 1990), calling \link{rsq.lr}; 
         
         'n' -- corrected version of 'lr' (Nagelkerke, 1991), calling \link{rsq.n}.}
+    \item{data}{an optional data frame used by fitObj.}
 }
 \details{
 Calculate the R-squared for (generalized) linear models.

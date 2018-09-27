@@ -2,10 +2,11 @@
 \alias{rsq.sse}
 \title{SSE-Based R-Squared}
 \description{The sum-of-squared-errors-based R^2 for generalized linear models.}
-\usage{rsq.sse(fitObj,adj=FALSE)}
+\usage{rsq.sse(fitObj,adj=FALSE,data=NULL)}
 \arguments{
     \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
+    \item{data}{an optional data frame used by fitObj.}
 }
 \details{
 This version of R^2 was proposed by Efron (1978). It is calculated on the basis of the formula of the classical R^2. }

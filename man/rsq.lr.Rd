@@ -2,10 +2,11 @@
 \alias{rsq.lr}
 \title{Likelihood-Ratio-Based R-Squared}
 \description{Calculate the likelihood-ratio-based R^2 for generalized linear models.}
-\usage{rsq.lr(fitObj,adj=FALSE)}
+\usage{rsq.lr(fitObj,adj=FALSE,data=NULL)}
 \arguments{
     \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
+    \item{data}{an optional data frame used by fitObj.}
 }
 \details{
 Proposed by Maddala (1983), Cox and Snell (1989), and Magee (1990), this version of R^2 is defined with the likelihood ratio statistics, so it is not defined for quasi models. It reduces to the classical R^2 when the variance function is constant or linear.

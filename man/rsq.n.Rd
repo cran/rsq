@@ -2,10 +2,11 @@
 \alias{rsq.n}
 \title{Corrected Likelihood-Ratio-Based R-Squared}
 \description{Corrected likelihood-ratio-based R^2 for generalized linear models.}
-\usage{rsq.n(fitObj,adj=FALSE)}
+\usage{rsq.n(fitObj,adj=FALSE,data=NULL)}
 \arguments{
     \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
+    \item{data}{an optional data frame used by fitObj.}
 }
 \details{
 Nagelkerke (1991) proposed this version of R^2 to correct the likelihood-ratio-statistic-based one which was proposed by Maddala (1983), Cox and Snell (1989), and Magee (1990). This corrected generalization of R^2 cannot reduce to the classical R^2 in case of linear models. It is not defined for quasi models.
