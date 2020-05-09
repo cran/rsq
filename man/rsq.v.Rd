@@ -1,23 +1,29 @@
 \name{rsq.v}
 \alias{rsq.v}
 \title{Variance-Function-Based R-Squared}
-\description{Calculate the variance-function-based R-squared for generalized linear models.}
-\usage{rsq.v(fitObj,adj=FALSE,data=NULL)}
+\description{Calculate the variance-function-based R-squared for generalized linear (mixed) models.}
+\usage{rsq.v(fitObj,adj=FALSE,DFUN=NULL)}
 \arguments{
-    \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
+    \item{fitObj}{ an object of class "lm", "glm", "lme", or "glmerMod", usually, a result of a call to \link{lm}, \link{glm}, \link{glm.nb}, \link{glmer}, or \link{glmer.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
-    \item{data}{an optional data frame used by fitObj.}
+    \item{DFUN}{ function which calculates the directed length along the variance function, and should be specified for quasi models (with \link{family}=quasi()).}
 }
 \details{
-The R^2 relies on the variance function, and is well-defined for quasi models. It reduces to the classical R^2 when the variance function is constant or linear.
+The R^2 relies on the variance function, and is well-defined for quasi models. It reduces to the classical R^2 when the variance function is constant or linear. For quasi models specified with family=quasi(), DFUN must be specified when the variance function is not constant or linear. For (generalized) linear mixed models, there are three types of R^2 calculated on the basis of observed response values, estimates of fixed effects, and variance components, i.e., model-based R_M^2 (proportion of variation explained by the model in total, including both fixed-effects and random-efffects factors), fixed-effects R_F^2 (proportion of variation explained by the fixed-effects factors), and random-effects R_R^2 (proportion of variation explained by the random-effects factors).
 }
-\value{The R^2 or adjusted R^2.}
+\value{The R^2 or adjusted R^2. For (generalized) linear mixed models,
+  \item{R_M^2}{proportion of variation explained by the model in total, including both fixed-effects and random-efffects factors.}
+  \item{R_F^2}{proportion of variation explained by the fixed-effects factors.}
+  \item{R_R^2}{proportion of variation explained by the random-effects factors.}
+}
 \references{
-Zhang, D. (2016). A coefficient of determination for generalized linear models. \emph{The American Statistician}, accepted. <http://dx.doi.org/10.1080/00031305.2016.1256839>.
+Zhang, D. (2017). A coefficient of determination for generalized linear models. \emph{The American Statistician}, 71(4): 310-316.
+
+Zhang, D. (2020). Coefficients of determination for generalized linear mixed models. \emph{Technical Report}, 20-01, Department of Statistics, Purdue University.
 }
 \author{Dabao Zhang, Department of Statistics, Purdue University}
 \seealso{
-\code{\link{rsq}, \link{rsq.partial}, \link{pcor}}.
+\code{\link{vresidual}, \link{rsq}, \link{rsq.glmm}, \link{rsq.partial}, \link{pcor}}.
 }
 \examples{
 data(hcrabs)
@@ -31,18 +37,9 @@ quasibn <- glm(y~color+spine+width+weight,family=quasibinomial)
 rsq.v(quasibn)
 rsq.v(quasibn,adj=TRUE)
 
-psfit <- glm(num.satellites~color+spine+width+weight,family=poisson)
-rsq.v(psfit)
-rsq.v(psfit,adj=TRUE)
-
-quasips <- glm(num.satellites~color+spine+width+weight,family=quasipoisson)
-rsq.v(quasips)
-rsq.v(quasips,adj=TRUE)
-
-# Effectiveness of Bycycle Safety Helmets in Thompson et al. (1989)
-y <- matrix(c(17,218,233,758),2,2)
-x <- factor(c("yes","no"))
-tbn <- glm(y~x,family=binomial)
-rsq.v(tbn)
-rsq.v(tbn,adj=TRUE)
+# Generalized linear mixed models
+require(lme4)
+data(cbpp)
+glmm1 <- glmer(cbind(incidence,size-incidence)~period+(1|herd),data=cbpp,family=binomial)
+rsq.v(glmm1)
 }

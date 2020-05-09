@@ -45,7 +45,7 @@ Magee, L. (1990) R^2 measures based on Wald and likelihood ratio joint significa
 
 Nagelkerke, N. J. D. (1991) A note on a general definition of the coefficient of determination. \emph{Biometrika}, 78: 691-692.
 
-Zhang, D. (2016). A coefficient of determination for generalized linear models. \emph{The American Statistician}, accepted. <http://dx.doi.org/10.1080/00031305.2016.1256839>.
+Zhang, D. (2017). A coefficient of determination for generalized linear models. \emph{The American Statistician}, 71(4): 310-316.
 }
 \author{Dabao Zhang, Department of Statistics, Purdue University}
 \seealso{

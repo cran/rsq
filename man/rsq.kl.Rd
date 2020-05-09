@@ -14,8 +14,6 @@ This version of R^2 was proposed by Cameron and Windmeijer (1997). It is extende
 Cameron, A. C. and Windmeijer, A. G. (1997) An R-squared measure of goodness of fit for some common nonlinear regression models. \emph{Journal of Econometrics}, 77: 329-342.
 
 McCullagh, P. (1983) Quasi-likelihood functions. \emph{Annals of Statistics}, 11: 59-67.
-
-Zhang, D. (2017) rsq: An R package to calculate the R-squared for generalized linear models. In preparation.
 }
 \author{Dabao Zhang, Department of Statistics, Purdue University}
 \seealso{
