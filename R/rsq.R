@@ -408,11 +408,8 @@ rsq.lmm<-function(fitObj,adj=FALSE)
 
 
 # Calculate the variance-function-based residual for given observed y and
-# its fitted value yfit, with theta the additional parameter, e.g., in
-# negative binomial. The variance-function-based distance function
-# can be specified in DFUN. Note that only one of DFUN and family (as long
-# as the family is not quasi) is required to specify.
-vresidual<-function(y,yfit,family="binomial",DFUN=NULL,theta=1)
+# its fitted value yfit, with prespecified family or variance function.
+vresidual<-function(y,yfit,family=binomial(),variance=NULL)
 {
   # Calculate the residual for given observed y and its fitted value yfit: 
   # the length between y and yfit along the quardratic variance function:
@@ -429,31 +426,61 @@ vresidual<-function(y,yfit,family="binomial",DFUN=NULL,theta=1)
     vr
   }
   
-  if( is.null(DFUN) )
-  {
-    switch(family,
-       binomial={DFUN<-function(x) qvresidual(x[1],x[2],-1,1)}, # Need modify for Y~Bin(n,p)
-       gaussian={DFUN<-function(x) x[1]-x[2]},
-       Gamma={DFUN<-function(x) qvresidual(x[1],x[2],1,0)},
-       negative.binomial={DFUN<-function(x) qvresidual(x[1],x[2],1/theta,1)},
-       poisson={DFUN<-function(x) x[1]-x[2]},
-       quasibinomial={DFUN<-function(x) qvresidual(x[1],x[2],-1,1)},
-       quasipoisson={DFUN<-function(x) x[1]-x[2]},
-       inverse.gaussian={
-         DFUN<-function(x) integrate(function(mu){sqrt(1+9*mu^4)},x[1],x[2])$value},
-       quasi={  # vf <- family$variance
-         warning("Need specify either DFUN!")
-         DFUN<-function(x) x[1]-x[2]})
-  }
+  if( is.character(family) ) {
+    cf <- family
+    family <- get(family, mode="function", envir=parent.frame())
+  } else
+    cf <- family$family
 
+  if( pmatch("Negative Binomial",cf,nomatch=F) )
+  {
+    theta <- as.numeric(gsub("(?<=\\()[^()]*(?=\\))(*SKIP)(*F)|.","", cf, perl=T))
+    cf <- "negative.binomial"
+  } else if( pmatch("Tweedie",cf,nomatch=F) )
+  {
+    dv <- Deriv(family$variance,"mu")
+    theta <- dv(1)
+  }
+  
+  if( is.null(variance) )
+  {
+    switch(cf,
+           binomial={DFUN<-function(x) qvresidual(x[1],x[2],-1,1)}, # Need modify for Y~Bin(n,p)
+           gaussian={DFUN<-function(x) x[1]-x[2]},
+           Gamma={DFUN<-function(x) qvresidual(x[1],x[2],1,0)},
+           negative.binomial={DFUN<-function(x) qvresidual(x[1],x[2],1/theta,1)},
+           poisson={DFUN<-function(x) x[1]-x[2]},
+           quasibinomial={DFUN<-function(x) qvresidual(x[1],x[2],-1,1)},
+           quasipoisson={DFUN<-function(x) x[1]-x[2]},
+           inverse.gaussian={
+             DFUN<-function(x) integrate(function(mu){sqrt(1+9*mu^4)},x[1],x[2])$value},
+           Tweedie={ # var.power: 0, 1, (1,2), 2, >2
+             if( (theta==0)|(theta==1) )
+               DFUN<-function(x) x[1]-x[2]
+             else if( theta==2 ) 
+               DFUN<-function(x) qvresidual(x[1],x[2],1,0)
+             else
+               DFUN<-function(x) integrate(function(mu){sqrt(1+theta^2*mu^(2*theta-2))},x[1],x[2])$value},
+           quasi={  # variance for quasi: "constant","mu(1-mu)","mu","mu^2","mu^3", or other
+             if( (family$varfun=="constant")|(family$varfun=="mu") )
+               DFUN <- function(x) x[1]-x[2]
+             else if( family$varfun=="mu(1-mu)" )
+               DFUN<-function(x) qvresidual(x[1],x[2],-1,1)
+             else if( family$varfun=="mu^2" )
+               DFUN<-function(x) qvresidual(x[1],x[2],1,0)
+             else
+               DFUN<-function(x) integrate(function(mu){sqrt(1+Deriv(family$variance,"mu")^2)},x[1],x[2])$value})
+  }
+  else
+    DFUN<-function(x) integrate(function(mu){sqrt(1+Deriv(variance,"mu")^2)},x[1],x[2])$value
+  
   vresidual <- apply(cbind(y,yfit),1,DFUN)
 }
 
 
 
 # Zhang (2017): variance-function-based R-squared.
-# The distance function DFUN should be specified when family="quasi".
-rsq.v<-function(fitObj,adj=FALSE,DFUN=NULL)
+rsq.v<-function(fitObj,adj=FALSE)
 {
   #if( is.null(data) )
   #  data <- fitObj$model
@@ -477,54 +504,49 @@ rsq.v<-function(fitObj,adj=FALSE,DFUN=NULL)
     {
       theta <- ifelse(is.null(fitObj$theta),
                       as.numeric(gsub("(?<=\\()[^()]*(?=\\))(*SKIP)(*F)|.","",
-                          family(fitObj)$family, perl=T)), fitObj$theta)
-      sse1 <- sum(wt*vresidual(y,yfit,family="negative.binomial",theta=theta)^2)
-
+                                      family(fitObj)$family, perl=T)), fitObj$theta)
+      sse1 <- sum(wt*vresidual(y,yfit,family=negative.binomial(theta))^2)
+      
       #y <- model.response(fitObj$model)
-      f0 <- glm(y~1,family=negative.binomial(theta=theta,link=family(fitObj)$link))
+      f0 <- glm(y~1,family=negative.binomial(theta))
       yf0 <- f0$fitted.values
-      sse0 <- sum(wt*vresidual(y,yf0,family="negative.binomial",theta=theta)^2)
+      sse0 <- sum(wt*vresidual(y,yf0,family=negative.binomial(theta))^2)
     }
     else if(family(fitObj)$family=="binomial")
     {
       nSuc <- wt*y
       nFai <- wt-nSuc
       tone <- rep(1,length(nSuc))
-      sse1 <- sum(nSuc*vresidual(tone,yfit,family=family(fitObj)$family)^2)+
-              sum(nFai*vresidual(1-tone,yfit,family=family(fitObj)$family)^2)
-
+      sse1 <- sum(nSuc*vresidual(tone,yfit,family=family(fitObj))^2)+
+        sum(nFai*vresidual(1-tone,yfit,family=family(fitObj))^2)
+      
       #f0 <- update(fitObj,.~1,data=data)
       f0 <- update(fitObj,.~1)
       yf0 <- f0$fitted.values
-      sse0 <- sum(nSuc*vresidual(tone,yf0,family=family(f0)$family)^2)+
-              sum(nFai*vresidual(1-tone,yf0,family=family(f0)$family)^2)
+      sse0 <- sum(nSuc*vresidual(tone,yf0,family=family(f0))^2)+
+        sum(nFai*vresidual(1-tone,yf0,family=family(f0))^2)
     }
     else
     {
-      if( family(fitObj)$family=="quasi" )
-        DFUN<-function(x) integrate(function(mu){grad(family(fitObj)$variance,mu)},x[1],x[2])$value
-
-      sse1 <- sum(wt*vresidual(y,yfit,family=family(fitObj)$family,DFUN=DFUN)^2)
-
-      #f0 <- update(fitObj,.~1,data=data)
+      sse1 <- sum(wt*vresidual(y,yfit,family=family(fitObj))^2)
+      
       f0 <- update(fitObj,.~1)
-      sse0 <- sum(wt*vresidual(y,f0$fitted.values,family=family(f0)$family,DFUN=DFUN)^2)
+      sse0 <- sum(wt*vresidual(y,f0$fitted.values,family=family(f0))^2)
     }
-
+    
     #rsq <- 1-(sse1/sse0)*ifelse(adj,f0$df.residual/fitObj$df.residual,1)
     pM <- fitObj$df.null-fitObj$df.residual+1
     rsq <- 1-(sse1/sse0)*ifelse(adj,(n-1)/(n-pM),1)
   }
-
+  
   rsq
 }
 
 
 
 #fitObj: object from glmer() or glmer.nb in lme4;
-#adj: whether to calculate the adjusted R-squared;
-#DFUN: variance-function-based distance function.
-rsq.glmm<-function(fitObj,adj=FALSE,DFUN=NULL)
+#adj: whether to calculate the adjusted R-squared.
+rsq.glmm<-function(fitObj,adj=FALSE)
 {
   # Prepare for integration via Gauss Quadrature (instead of using "integrate")
   #gqc <- gauss.quad(100,kind="hermite")
@@ -535,7 +557,7 @@ rsq.glmm<-function(fitObj,adj=FALSE,DFUN=NULL)
   {
     fe <- getME(fitObj,"X")%*%lme4::fixef(fitObj)
     ZLambda <- getME(fitObj,"Z")%*%getME(fitObj,"Lambda")
-
+    
     #tau <- sqrt(Matrix::diag(ZLambda%*%Matrix::t(ZLambda)))*sigma(fitObj)
     tau <- sqrt(Matrix::diag(ZLambda%*%Matrix::t(ZLambda)))
     invLink <- make.link(family(fitObj)$link)$linkinv # inverse of link function
@@ -545,9 +567,10 @@ rsq.glmm<-function(fitObj,adj=FALSE,DFUN=NULL)
       if( ft[2]<.Machine$double.eps )
         invLink(ft[1])
       else
+      { # Need special treatment: "inverse", "1/mu^2", "log", and any others?
         integrate(function(x) invLink(ft[1]+x)*dnorm(x,mean=0,sd=ft[2]),
-                  -10*ft[2],10*ft[2])$value 
-        #sum(invLink(ft[1]+gqc$node*ft[2])*dnorm(gqc$node,mean=0,sd=1)*gqc$weights) 
+                  -10*ft[2],10*ft[2],rel.tol=1e-6)$value 
+      }
     }
     
     mm <- apply(cbind(fe,tau),1,mmean1)
@@ -560,11 +583,11 @@ rsq.glmm<-function(fitObj,adj=FALSE,DFUN=NULL)
   {
     fe <- getME(fitObj,"X")%*%lme4::fixef(fitObj)
     ZLambda <- getME(fitObj,"Z")%*%getME(fitObj,"Lambda")
-
+    
     #tau <- sqrt(Matrix::diag(ZLambda%*%Matrix::t(ZLambda)))*sigma(fitObj)
     tau <- sqrt(Matrix::diag(ZLambda%*%Matrix::t(ZLambda)))
     invLink <- make.link(family(fitObj)$link)$linkinv # inverse of link function
-
+    
     theta <- 1
     tfamily <- family(fitObj)$family
     if( pmatch("Negative Binomial",family(fitObj)$family,nomatch=F) )
@@ -576,23 +599,24 @@ rsq.glmm<-function(fitObj,adj=FALSE,DFUN=NULL)
                                       family(fitObj)$family, perl=T)), theta)
     }
     else if( family(fitObj)$family=="Gamma" ) # theta <- dispersion
-      theta <- deviance(fitObj)/sum(weights(fitObj))
-
-    VFUN <- NULL
-    if( family(fitObj)$family=="quasi" )
-      VFUN <- family(fitObj)$variance
-
+      theta <- deviance(fitObj)/sum(weights(fitObj)) #???
+    
     # Probability density function for exponential family distribution.
     # x: vaule of the variable;
     # mu: mean value of the variable;
     # family: family of the distribution, see glm().
-    # VFUN: variance function
     # theta: extra parameter as in binomial (size), negative binomial (size),
     #        normal (standard deviation), gamma distribution (dispersion=1/shape), 
     #        quasibinomial (dispersion), quasipoisson (dispersion), quasi (dispersion)
-    defd <- function(x,mu,family,VFUN=NULL,theta=1)
-    {
-      switch(family,
+    defd <- function(x,mu,family=binomial(),theta=1)
+    { # Calculated via family components?
+      if( is.character(family) ) {
+        cf <- family
+        family <- get(family, mode="function", envir=parent.frame())
+      } else
+        cf <- family$family
+
+      switch(cf,
              binomial={ # Need modify for Y~Bin(n,p)
                pdf<-dbinom(x,size=theta,prob=mu)},
              gaussian={
@@ -612,31 +636,25 @@ rsq.glmm<-function(fitObj,adj=FALSE,DFUN=NULL)
              quasi={
                # \exp(\int^{\mu}_{y} \frac{y-t}{\phi V(t)} dt)
                if( length(x)>1 )
-                 pdf<-lapply(x,function(y)exp(integrate(function(t) (y-t)/(theta*VFUN(t)),mu,y)$value))
+                 pdf<-lapply(x,function(y)exp(integrate(function(t) (y-t)/(theta*family$variance(t)),mu,y)$value))
                else
-                 pdf<-exp(integrate(function(t) (x-t)/(theta*VFUN(t)),mu,x)$value)
-             })
+                 pdf<-exp(integrate(function(t) (x-t)/(theta*family$family$variance(t)),mu,x)$value)})
       
-      pdf  
+      pdf
     }
     
     # Calcuate the mean distance over random effects at each observation
     dmean1<-function(yft)
     { #yft =(y,fe,tau)
       if( yft[3]<.Machine$double.eps )
-        dm1 <- vresidual(yft[1],invLink(yft[2]),family=tfamily,theta=theta)^2
+        dm1 <- vresidual(yft[1],invLink(yft[2]),family=family(fitObj))^2
       else
       {
-        td <- integrate(function(x) defd(yft[1],invLink(yft[2]+x),tfamily,VFUN=VFUN,theta=theta)*
-                 dnorm(x,mean=0,sd=yft[3]),-10*yft[3],10*yft[3])$value
-        dm1 <- integrate(function(x) (vresidual(yft[1],invLink(yft[2]+x),family=tfamily,theta=theta)^2)*
-                 defd(yft[1],invLink(yft[2]+x),tfamily,VFUN=VFUN,theta=theta)*dnorm(x,mean=0,sd=yft[3]),
-                 -10*yft[3],10*yft[3])$value/td
-        #td <- sum(defd(yft[1],invLink(yft[2]+gqc$node*yft[3]),tfamily,VFUN=VFUN,theta=theta)*
-        #          dnorm(gqc$node,mean=0,sd=1)*gqc$weights)
-        #dm1 <- sum((vresidual(yft[1],invLink(yft[2]+gqc$node*yft[3]),family=tfamily,theta=theta)^2)*
-        #           defd(yft[1],invLink(yft[2]+gqc$node*yft[3]),tfamily,VFUN=VFUN,theta=theta)*
-        #           dnorm(gqc$node,mean=0,sd=1)*gqc$weights)/td
+        td <- integrate(function(x) defd(yft[1],invLink(yft[2]+x),family(fitObj),theta=theta)*
+                          dnorm(x,mean=0,sd=yft[3]),-10*yft[3],10*yft[3])$value
+        dm1 <- integrate(function(x) (vresidual(yft[1],invLink(yft[2]+x),family=family(fitObj))^2)*
+                           defd(yft[1],invLink(yft[2]+x),family(fitObj),theta=theta)*dnorm(x,mean=0,sd=yft[3]),
+                         -10*yft[3],10*yft[3])$value/td
       }
     }
     
@@ -665,13 +683,12 @@ rsq.glmm<-function(fitObj,adj=FALSE,DFUN=NULL)
     theta <- ifelse(is.null(theta),
                     as.numeric(gsub("(?<=\\()[^()]*(?=\\))(*SKIP)(*F)|.","",
                                     family(fitObj)$family, perl=T)), theta)
-
+    
     f0 <- glm(y~1,family=negative.binomial(theta=theta,link=family(fitObj)$link))
     yf0 <- f0$fitted.values
-    SST <- sum(wt*vresidual(y,yf0,family="negative.binomial",theta=theta)^2)
+    SST <- sum(wt*vresidual(y,yf0,family=negative.binomial(theta))^2)
     
-    rsqFix <- 1-sum(wt*vresidual(y,mmean(fitObj),family="negative.binomial",
-                                 theta=theta)^2)/SST
+    rsqFix <- 1-sum(wt*vresidual(y,mmean(fitObj),family=negative.binomial(theta))^2)/SST
     rsqMod <- 1-sum(wt*dmean(y,fitObj))/SST
   }
   else if( family(fitObj)$family=="binomial" )
@@ -680,22 +697,19 @@ rsq.glmm<-function(fitObj,adj=FALSE,DFUN=NULL)
     nFai <- wt-nSuc
     tone <- rep(1,length(nSuc))
     ymean <- sum(nSuc)/sum(wt)
-    SST <- sum(nSuc*vresidual(tone,ymean,family=family(fitObj)$family)^2)+
-      sum(nFai*vresidual(1-tone,ymean,family=family(fitObj)$family)^2)
-    rsqFix <- 1-sum(nSuc*vresidual(tone,mmean(fitObj),family=family(fitObj)$family)^2+
-                    nFai*vresidual(1-tone,mmean(fitObj),family=family(fitObj)$family)^2)/SST
+    SST <- sum(nSuc*vresidual(tone,ymean,family=family(fitObj))^2)+
+      sum(nFai*vresidual(1-tone,ymean,family=family(fitObj))^2)
+    rsqFix <- 1-sum(nSuc*vresidual(tone,mmean(fitObj),family=family(fitObj))^2+
+                      nFai*vresidual(1-tone,mmean(fitObj),family=family(fitObj))^2)/SST
     rsqMod <- 1-sum(nSuc*dmean(tone,fitObj)+nFai*dmean(1-tone,fitObj))/SST
   }
   else
   {
-    if( family(fitObj)$family=="quasi" )
-      DFUN<-function(x) integrate(function(mu){grad(family(fitObj)$variance,mu)},x[1],x[2])$value
-
-    SST <- sum(wt*vresidual(y,mean(y),family=family(fitObj)$family,DFUN=DFUN)^2)
-    rsqFix <- 1-sum(wt*vresidual(y,mmean(fitObj),family=family(fitObj)$family,DFUN=DFUN)^2)/SST
+    SST <- sum(wt*vresidual(y,mean(y),family=family(fitObj))^2)
+    rsqFix <- 1-sum(wt*vresidual(y,mmean(fitObj),family=family(fitObj))^2)/SST
     rsqMod <- 1-sum(wt*dmean(y,fitObj))/SST
   }
-
+  
   if( adj )
   {
     rsqFix <- 1-(1-rsqFix)*(n-1)/ndf

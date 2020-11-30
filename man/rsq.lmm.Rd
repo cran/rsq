@@ -16,7 +16,7 @@ There are three types of R^2 calculated on the basis of observed response values
   \item{R_R^2}{proportion of variation explained by the random-effects factors.}
 }
 \references{
-Zhang, D. (2020). Coefficients of determination for generalized linear mixed models. \emph{Technical Report}, 20-01, Department of Statistics, Purdue University.
+Zhang, D. (2020). Coefficients of determination for mixed-effects models. arXiv:2007.0867.
 }
 \author{Dabao Zhang, Department of Statistics, Purdue University}
 \seealso{
