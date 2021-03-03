@@ -1,7 +1,7 @@
 Package: rsq
 Title: R-Squared and Related Measures
-Version: 2.1
-Date: 2020-11-29
+Version: 2.2
+Date: 2021-03-01
 Author: Dabao Zhang
 Maintainer: Dabao Zhang <zhangdb@stat.purdue.edu>
 Description: Calculate generalized R-squared, partial R-squared, and partial correlation coefficients for generalized linear (mixed) models (including quasi models with well defined variance functions).
@@ -9,6 +9,6 @@ Imports: methods, stats, MASS, lme4, nlme, Deriv, Matrix
 Suggests:
 License: GPL-2
 NeedsCompilation: no
-Packaged: 2020-11-29 23:37:31 UTC; zhangdb
+Packaged: 2021-03-02 23:01:15 UTC; admin-zhangdb
 Repository: CRAN
-Date/Publication: 2020-11-30 05:20:02 UTC
+Date/Publication: 2021-03-03 14:00:02 UTC

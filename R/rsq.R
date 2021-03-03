@@ -160,7 +160,8 @@ pcor<-function(objF,objR=NULL,adj=FALSE,type=c('v','kl','sse','lr','n'))
         tlevels <- rep(1,length(tcovs))
         for( kk in 1:length(tcovs) )
         {
-          tlevels[kk] <- ifelse((varcls[tcovs[kk]]=="factor")|(varcls[tcovs[kk]]=="ordered"),nlevels(objF$model[1,tcovs[kk]])-1,1)
+          tlevels[kk] <- ifelse((varcls[tcovs[kk]]=="factor")|(varcls[tcovs[kk]]=="ordered"),
+                                nlevels(objF$model[1,tcovs[kk]])-1,1)
         }
         nLevels[j] <- prod(tlevels)
       }
@@ -257,7 +258,7 @@ rsq.lr<-function(fitObj,adj=FALSE)
   if( is(fitObj,"glm") )
   {
     n <- fitObj$df.null+1
-    k <- fitObj$rank
+    #k <- fitObj$rank
     logLik1 <- as.numeric(logLik(fitObj))
     
     #fitObj0 <- update(fitObj,.~1,data=fitObj$model)
@@ -288,7 +289,7 @@ rsq.n<-function(fitObj,adj=FALSE)
   if( is(fitObj,"glm") )
   {
     n <- fitObj$df.null+1
-    k <- fitObj$rank
+    #k <- fitObj$rank
     logLik1 <- as.numeric(logLik(fitObj))
     
     #fitObj0 <- update(fitObj,.~1,data=fitObj$model)
@@ -308,7 +309,7 @@ rsq.n<-function(fitObj,adj=FALSE)
 
 
 # Simulate generalized linear models as in Zhang (2017)
-simglm<-function(family=c("binomial", "gaussian", "poisson","Gamma"),lambda=3,n=50,p=3) 
+simglm<-function(family=c("binomial","gaussian","poisson","Gamma"),lambda=3,n=50,p=3) 
 {
   family <- family[[1]]
 
@@ -445,31 +446,31 @@ vresidual<-function(y,yfit,family=binomial(),variance=NULL)
   if( is.null(variance) )
   {
     switch(cf,
-           binomial={DFUN<-function(x) qvresidual(x[1],x[2],-1,1)}, # Need modify for Y~Bin(n,p)
-           gaussian={DFUN<-function(x) x[1]-x[2]},
-           Gamma={DFUN<-function(x) qvresidual(x[1],x[2],1,0)},
-           negative.binomial={DFUN<-function(x) qvresidual(x[1],x[2],1/theta,1)},
-           poisson={DFUN<-function(x) x[1]-x[2]},
-           quasibinomial={DFUN<-function(x) qvresidual(x[1],x[2],-1,1)},
-           quasipoisson={DFUN<-function(x) x[1]-x[2]},
-           inverse.gaussian={
-             DFUN<-function(x) integrate(function(mu){sqrt(1+9*mu^4)},x[1],x[2])$value},
-           Tweedie={ # var.power: 0, 1, (1,2), 2, >2
-             if( (theta==0)|(theta==1) )
-               DFUN<-function(x) x[1]-x[2]
-             else if( theta==2 ) 
-               DFUN<-function(x) qvresidual(x[1],x[2],1,0)
-             else
-               DFUN<-function(x) integrate(function(mu){sqrt(1+theta^2*mu^(2*theta-2))},x[1],x[2])$value},
-           quasi={  # variance for quasi: "constant","mu(1-mu)","mu","mu^2","mu^3", or other
-             if( (family$varfun=="constant")|(family$varfun=="mu") )
-               DFUN <- function(x) x[1]-x[2]
-             else if( family$varfun=="mu(1-mu)" )
-               DFUN<-function(x) qvresidual(x[1],x[2],-1,1)
-             else if( family$varfun=="mu^2" )
-               DFUN<-function(x) qvresidual(x[1],x[2],1,0)
-             else
-               DFUN<-function(x) integrate(function(mu){sqrt(1+Deriv(family$variance,"mu")^2)},x[1],x[2])$value})
+      binomial={DFUN<-function(x) qvresidual(x[1],x[2],-1,1)}, # Need modify for Y~Bin(n,p)
+      gaussian={DFUN<-function(x) x[1]-x[2]},
+      Gamma={DFUN<-function(x) qvresidual(x[1],x[2],1,0)},
+      negative.binomial={DFUN<-function(x) qvresidual(x[1],x[2],1/theta,1)},
+      poisson={DFUN<-function(x) x[1]-x[2]},
+      quasibinomial={DFUN<-function(x) qvresidual(x[1],x[2],-1,1)},
+      quasipoisson={DFUN<-function(x) x[1]-x[2]},
+      inverse.gaussian={
+        DFUN<-function(x) integrate(function(mu){sqrt(1+9*mu^4)},x[1],x[2])$value},
+      Tweedie={ # var.power: 0, 1, (1,2), 2, >2
+        if( (theta==0)|(theta==1) )
+          DFUN<-function(x) x[1]-x[2]
+        else if( theta==2 ) 
+          DFUN<-function(x) qvresidual(x[1],x[2],1,0)
+        else
+          DFUN<-function(x) integrate(function(mu){sqrt(1+theta^2*mu^(2*theta-2))},x[1],x[2])$value},
+      quasi={  # variance for quasi: "constant","mu(1-mu)","mu","mu^2","mu^3", or other
+        if( (family$varfun=="constant")|(family$varfun=="mu") )
+          DFUN <- function(x) x[1]-x[2]
+        else if( family$varfun=="mu(1-mu)" )
+          DFUN<-function(x) qvresidual(x[1],x[2],-1,1)
+        else if( family$varfun=="mu^2" )
+          DFUN<-function(x) qvresidual(x[1],x[2],1,0)
+        else
+          DFUN<-function(x) integrate(function(mu){sqrt(1+Deriv(family$variance,"mu")^2)},x[1],x[2])$value})
   }
   else
     DFUN<-function(x) integrate(function(mu){sqrt(1+Deriv(variance,"mu")^2)},x[1],x[2])$value
@@ -524,7 +525,7 @@ rsq.v<-function(fitObj,adj=FALSE)
       f0 <- update(fitObj,.~1)
       yf0 <- f0$fitted.values
       sse0 <- sum(nSuc*vresidual(tone,yf0,family=family(f0))^2)+
-        sum(nFai*vresidual(1-tone,yf0,family=family(f0))^2)
+                sum(nFai*vresidual(1-tone,yf0,family=family(f0))^2)
     }
     else
     {
@@ -564,12 +565,13 @@ rsq.glmm<-function(fitObj,adj=FALSE)
     
     mmean1<-function(ft)
     { # ft=(fe,tau)
-      if( ft[2]<.Machine$double.eps )
+      if( ft[2]<sqrt(.Machine$double.eps) )
         invLink(ft[1])
       else
       { # Need special treatment: "inverse", "1/mu^2", "log", and any others?
-        integrate(function(x) invLink(ft[1]+x)*dnorm(x,mean=0,sd=ft[2]),
-                  -10*ft[2],10*ft[2],rel.tol=1e-6)$value 
+        nMax <- sqrt(.Machine$double.xmax)
+        integrate(function(x) pmax(-nMax,pmin(nMax,invLink(ft[1]+x)*dnorm(x,mean=0,sd=ft[2]))),
+                  -5*ft[2],5*ft[2],rel.tol=1e-6)$value 
       }
     }
     
@@ -589,14 +591,11 @@ rsq.glmm<-function(fitObj,adj=FALSE)
     invLink <- make.link(family(fitObj)$link)$linkinv # inverse of link function
     
     theta <- 1
-    tfamily <- family(fitObj)$family
     if( pmatch("Negative Binomial",family(fitObj)$family,nomatch=F) )
     {
-      tfamily <- "negative.binomial"
       theta <- getME(fitObj,"glmer.nb.theta")
-      theta <- ifelse(is.null(theta),
-                      as.numeric(gsub("(?<=\\()[^()]*(?=\\))(*SKIP)(*F)|.","",
-                                      family(fitObj)$family, perl=T)), theta)
+      theta <- ifelse(is.null(theta),as.numeric(gsub("(?<=\\()[^()]*(?=\\))(*SKIP)(*F)|.",
+                      "",family(fitObj)$family, perl=T)), theta)
     }
     else if( family(fitObj)$family=="Gamma" ) # theta <- dispersion
       theta <- deviance(fitObj)/sum(weights(fitObj)) #???
@@ -616,49 +615,69 @@ rsq.glmm<-function(fitObj,adj=FALSE)
       } else
         cf <- family$family
 
+      if( pmatch("Negative Binomial",cf,nomatch=F) )
+        cf <- "negative.binomial"
+
+      nMax <- sqrt(.Machine$double.xmax)
       switch(cf,
-             binomial={ # Need modify for Y~Bin(n,p)
-               pdf<-dbinom(x,size=theta,prob=mu)},
-             gaussian={
-               pdf<-dnorm(x,mean=mu,sd=theta)},
-             Gamma={ # shape=1/dispersion, scale=dispersion*mean
-               pdf<-dgamma(x,shape=1/theta,scale=mu*theta)},
-             negative.binomial={ #???
-               pdf<-dnbinom(x,size=theta,mu=mu)},
-             poisson={
-               pdf<-dpois(x,lambda=mu)},
-             quasibinomial={ # Quasi-likelihood
-               pdf<- ((1-mu)^((1-x)/theta))*(mu^(x/theta))},
-             quasipoisson={ # Quasi-likelihood
-               pdf<- (x*log(mu/x)+(x-mu))/theta},
-             inverse.gaussian={ #theta=1
-               pdf<-exp(-theta*((x-mu)^2)/(2*x*(mu^2)))*sqrt(theta)/sqrt(2*pi*(x^3))},
-             quasi={
-               # \exp(\int^{\mu}_{y} \frac{y-t}{\phi V(t)} dt)
-               if( length(x)>1 )
-                 pdf<-lapply(x,function(y)exp(integrate(function(t) (y-t)/(theta*family$variance(t)),mu,y)$value))
-               else
-                 pdf<-exp(integrate(function(t) (x-t)/(theta*family$family$variance(t)),mu,x)$value)})
+        binomial={ # Need modify for Y~Bin(n,p) # x should be nonnegative integer?
+          pdf<-dbinom(x,size=theta,prob=mu)},
+        gaussian={
+          pdf<-dnorm(x,mean=mu,sd=theta)},
+        Gamma={ # shape=1/dispersion, scale=dispersion*mean
+          pdf<-dgamma(x,shape=1/theta,scale=mu*theta)},
+        negative.binomial={ # x should be nonnegative integer?
+          pdf<-dnbinom(x,size=theta,mu=mu)},
+        poisson={ # x should be nonnegative integer?
+          pdf<-dpois(x,lambda=mu)},
+        quasibinomial={ # Quasi-likelihood
+          pdf<- ((1-mu)^((1-x)/theta))*(mu^(x/theta))},
+        quasipoisson={ # Quasi-likelihood ???
+          pdf<- (x*log(mu/x)+(x-mu))/theta},
+        inverse.gaussian={ #theta=1
+          pdf<-exp(-theta*((x-mu)^2)/(2*x*(mu^2)))*sqrt(theta)/sqrt(2*pi*(x^3))},
+        quasi={ # \exp(\int^{\mu}_{y} \frac{y-t}{\phi V(t)} dt)
+          if( length(x)>1 )
+            pdf<-lapply(x,function(y)exp(integrate(function(t) pmax(-nMax,pmin(nMax,
+                                (y-t)/(theta*family$variance(t)))),mu,y)$value))
+          else
+            pdf<-exp(integrate(function(t) pmax(-nMax,pmin(nMax,
+                                (x-t)/(theta*family$family$variance(t)))),mu,x)$value)})
       
-      pdf
+      pmax(-nMax,pmin(nMax,pdf))
     }
     
     # Calcuate the mean distance over random effects at each observation
-    dmean1<-function(yft)
+    dmean1<-function(yft,family=binomial(),theta=1)
     { #yft =(y,fe,tau)
-      if( yft[3]<.Machine$double.eps )
-        dm1 <- vresidual(yft[1],invLink(yft[2]),family=family(fitObj))^2
+      if( yft[3]<sqrt(.Machine$double.eps) )
+        dm1 <- vresidual(yft[1],invLink(yft[2]),family)^2
       else
       {
-        td <- integrate(function(x) defd(yft[1],invLink(yft[2]+x),family(fitObj),theta=theta)*
-                          dnorm(x,mean=0,sd=yft[3]),-10*yft[3],10*yft[3])$value
-        dm1 <- integrate(function(x) (vresidual(yft[1],invLink(yft[2]+x),family=family(fitObj))^2)*
-                           defd(yft[1],invLink(yft[2]+x),family(fitObj),theta=theta)*dnorm(x,mean=0,sd=yft[3]),
-                         -10*yft[3],10*yft[3])$value/td
+        #td <- integrate(function(x) defd(yft[1],invLink(yft[2]+x),family(fitObj),theta=theta)*
+        #                  dnorm(x,mean=0,sd=yft[3]),-5*yft[3],5*yft[3])$value
+        #dm1 <- integrate(function(x) (vresidual(yft[1],invLink(yft[2]+x),family=family(fitObj))^2)*
+        #                   defd(yft[1],invLink(yft[2]+x),family(fitObj),theta=theta)*dnorm(x,mean=0,sd=yft[3]),
+        #                 -5*yft[3],5*yft[3])$value/td
+        
+        #td <- integrate(function(x) defd(yft[1],invLink(yft[2]+x),family,theta=theta)*
+        #                  dnorm(x,mean=0,sd=yft[3]),-5*yft[3],5*yft[3])$value
+        
+        nMax <- sqrt(.Machine$double.xmax)
+        td <- integrate(function(x) pmax(-nMax,pmin(nMax,defd(yft[1],invLink(yft[2]+x),family,theta=theta)*
+                          dnorm(x,mean=0,sd=yft[3]))),-5*yft[3],5*yft[3])$value
+        
+        #dm1 <- integrate(function(x) (vresidual(yft[1],invLink(yft[2]+x),family)^2)*
+        #                   defd(yft[1],invLink(yft[2]+x),family,theta=theta)*
+        #                   dnorm(x,mean=0,sd=yft[3]),-5*yft[3],5*yft[3])$value/td
+        dm1 <- integrate(function(x) pmax(-nMax,pmin(nMax,(vresidual(yft[1],invLink(yft[2]+x),family)^2)*
+                           defd(yft[1],invLink(yft[2]+x),family,theta=theta)*
+                           dnorm(x,mean=0,sd=yft[3]))),-5*yft[3],5*yft[3])$value/td
       }
     }
     
-    dm <- apply(cbind(y,fe,tau),1,dmean1)
+    #dm <- apply(cbind(y,fe,tau),1,dmean1)
+    dm <- apply(cbind(y,fe,tau),1,dmean1,family=family(fitObj),theta=theta)
   }
   
   if( is(fitObj, "lme") )
@@ -727,22 +746,30 @@ rsq.glmm<-function(fitObj,adj=FALSE)
 #    u_i ~ N(0,tau^2)
 # So there are m groups with K=[n/m] subjects in each panel.
 #
-simglmm<-function(family=c("binomial","gaussian","poisson","Gamma"),beta=c(2,0),tau=1,n=200,m=10)
+simglmm<-function(family=c("binomial","gaussian","poisson","Gamma"),beta=c(2,0),tau=1,n=200,m=10,balance=TRUE)
 {
   family <- family[[1]]
   
   p <- 3
-  K <- round(n/m)
-  n <- m*K
-  grpID <- kronecker(matrix(1:m,nrow=m,ncol=1),matrix(1,K,1))
+  pSize <- rep(round(n/m),m)
+  pSize[m] <- n-sum(pSize[-m])
+  if( !balance )
+    pSize <- rmultinom(1,n-2*m,rep(1,m)/m)+2
   
-  # Random effects
-  rndEff <- kronecker(matrix(rnorm(m,mean=0,sd=tau),nrow=m,ncol=1),matrix(1,K,1))
-
+  grpID <- matrix(1,nrow=pSize[1],ncol=1)
+  rndEff <- matrix(rnorm(1,mean=0,sd=tau),nrow=pSize[1],ncol=1)
+  for( j in 2:m )
+  {
+    grpID <- rbind(grpID,matrix(j,nrow=pSize[j],ncol=1))
+    
+    # Random effects
+    rndEff <- rbind(rndEff,matrix(rnorm(1,mean=0,sd=tau),nrow=pSize[j],ncol=1))
+  }
+  
   x <- matrix(rnorm(n*p,mean=0,sd=1),nrow=n,ncol=p)
   x[,1] <- rep(c(1,-1),n/2)
   eta <- x[,1]*beta[1]+x[,2]*beta[2]+rndEff
-
+  
   switch(family,
          binomial={y<-rbinom(n,1,1/(1+exp(-eta)))},
          gaussian={y<-rnorm(n,mean=eta,sd=1)},
@@ -751,6 +778,48 @@ simglmm<-function(family=c("binomial","gaussian","poisson","Gamma"),beta=c(2,0),
          #size <- 2
          #y <- rnbinom(n,size=2,mu=size/(exp(-eta)-1))},
          Gamma={y<-rgamma(n,shape=100,scale=0.01/(1+eta))})
+  
+  list(yx=data.frame(y=y,x1=x[,1],x2=x[,2],x3=x[,3],subject=grpID),beta=beta,u=rndEff)
+}
+
+
+
+# Simulate longitudinal data as in Zhang (2021+)
+#    Y_{ij} = beta*X_{ij} + u_i+epsilon_{ij}, j=1, 2, ..., K_i; i=1, 2, ..., m.
+#    u_i ~ N(0,tau^2)
+#    corr(epsilon_{i,j}, epsilon_{i,j+1}) = alpha =0.5 
+# So generate balanced or unbalanced data from Gaussian or probit models with K_i subjects in panel i.
+#
+simldata<-function(family=c("binomial","gaussian"),beta=c(2,0),tau=1,n=200,m=10,balance=TRUE,rho=0.5)
+{
+  family <- family[[1]]
+  
+  p <- 3
+  pSize <- rep(round(n/m),m)
+  pSize[m] <- n-sum(pSize[-m])
+  if( !balance )
+    pSize <- rmultinom(1,n-2*m,rep(1,m)/m)+2
+  
+  grpID <- matrix(1,nrow=pSize[1],ncol=1)
+  rndEff <- matrix(rnorm(1,mean=0,sd=tau),nrow=pSize[1],ncol=1)
+  eTerm <- as.matrix(arima.sim(list(order=c(1,0,0),ar=rho),n=pSize[1]),ncol=1)
+  for( j in 2:m )
+  {
+    grpID <- rbind(grpID,matrix(j,nrow=pSize[j],ncol=1))
+    
+    # Random effects
+    rndEff <- rbind(rndEff,matrix(rnorm(1,mean=0,sd=tau),nrow=pSize[j],ncol=1))
+    
+    # Error terms
+    eTerm <- rbind(eTerm, as.matrix(arima.sim(list(order=c(1,0,0),ar=rho),n=pSize[j]),ncol=1))
+  }
+  
+  x <- matrix(rnorm(n*p,mean=0,sd=1),nrow=n,ncol=p)
+  x[,1] <- rep(c(1,-1),n/2)
+  y <- x[,1]*beta[1]+x[,2]*beta[2]+rndEff+eTerm 
+  
+  if( family=='binomial' )
+    y <- (y>0)+0
   
   list(yx=data.frame(y=y,x1=x[,1],x2=x[,2],x3=x[,3],subject=grpID),beta=beta,u=rndEff)
 }
