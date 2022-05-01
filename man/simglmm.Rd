@@ -2,8 +2,8 @@
 \alias{simglmm}
 \title{Simulate Data from Generalized Linear Mixed Models}
 \description{Simulate data from linear and generalized linear mixed models. The coefficients of the two covariate are specified by \code{beta}.}
-\usage{simglmm(family=c("binomial","gaussian","poisson","Gamma"),beta=c(2,0),tau=1,
-        n=200,m=10,balance=TRUE)}
+\usage{simglmm(family=c("binomial","gaussian","poisson","negative.binomial"),
+beta=c(2,0),tau=1,n=200,m=10,balance=TRUE)}
 \arguments{
     \item{family}{ the family of the distribution.}
     \item{beta}{ regression coefficients (excluding the intercept which is set as zero).}
@@ -26,7 +26,7 @@ Zhang, D. (2020). Coefficients of determination for generalized linear mixed mod
 }
 \author{Dabao Zhang, Department of Statistics, Purdue University}
 \seealso{
-\code{\link{rsq}, \link{rsq.lmm}, \link{rsq.glmm}, \link{simldata}, \link{simglm}},
+\code{\link{rsq}, \link{rsq.lmm}, \link{rsq.glmm}, \link{simglm}},
 }
 \examples{
 require(lme4)

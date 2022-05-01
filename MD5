@@ -1,13 +1,13 @@
-1afbaf92845bdb6c847f37af9a559129 *DESCRIPTION
-7706131a3d907dcbf3da966d0ee89b1b *NAMESPACE
-1af9c49f98c5a992267d2d39d18d58ed *R/rsq.R
+675f0ff14a801fa159217d030ddbe70b *DESCRIPTION
+beaeca23d026f92b15877d3e7dc45530 *NAMESPACE
+febc0d000dc6ce9ea90b9cb87108282c *R/rsq.R
 c9769f2184399d7637845c50f5d2c055 *data/hcrabs.rda
 bff4772e2aa6ab72317b7e8b96687c47 *data/hschool.rda
 bff4772e2aa6ab72317b7e8b96687c47 *data/hscool.rda
 67913f09fba7060db722dc9be0d11e27 *data/lifetime.rda
 e187b88876547f4c6aada720e71f6076 *data/toxo.rda
 f13ecd94251b7bda0c6e35bdfd210602 *man/hcrabs.Rd
-47e342ff75172654f745a024bec94d0b *man/hschool.Rd
+bf6f6d3ca4b089d5e0ad8c8459373f5c *man/hschool.Rd
 d06184e47e761b055d1649f062b9e711 *man/lifetime.Rd
 c25586c457100607bdbe89c75179d062 *man/pcor.Rd
 ef7ab1d510948f08385215c1a291928b *man/rsq.Rd
@@ -20,7 +20,6 @@ ed6d0ced30c01d38c8e317cb43a0b43c *man/rsq.partial.Rd
 38b771b7a8f9c5db177372c1092f115b *man/rsq.sse.Rd
 fb999c5c85fac9a4b5057f195b1cf0a1 *man/rsq.v.Rd
 b7d99c3391989a9a98457b4177bbde7c *man/simglm.Rd
-7448642954f46c29bc0c16ad67237760 *man/simglmm.Rd
-63f48fff5a2afb6000e2ec8dad3e1598 *man/simldata.Rd
+8ae6cd30cb3d51b1849cae67c3990f07 *man/simglmm.Rd
 9aec0cc85bc0252764292a796fa3458e *man/toxo.Rd
 47fd1cf94f627df5103d43ab86afb64c *man/vresidual.Rd
