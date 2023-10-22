@@ -25,6 +25,11 @@ rsq<-function(fitObj,adj=FALSE,type=c('v','kl','sse','lr','n'))
     rsq <- rsq.lmm(fitObj,adj=adj)
   else if( is(fitObj,"lm") )
     rsq <- ifelse(adj,summary(fitObj)$adj.r.squared,summary(fitObj)$r.squared)
+  else if( is(fitObj,"deming")) {
+    if( is.null(fitObj$model) ) warning("Set model=TRUE in deming(...)!")
+    rsq <- 1-ifelse(adj,(var(fitObj$residuals)/var(fitObj$model[,1]))*(1+1/(fitObj$n-2)),
+                    var(fitObj$residuals)/var(fitObj$model[,1]))
+  }
   else
     warning("Unsupported object!")
 

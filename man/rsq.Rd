@@ -8,7 +8,7 @@
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
     \item{type}{  the type of R-squared (only applicable for generalized linear models):
     
-        'v' (default) -- variance-function-based (Zhang, 2016), calling \link{rsq.v}; 
+        'v' (default) -- variance-function-based (Zhang, 2017), calling \link{rsq.v}; 
         
         'kl' -- KL-divergence-based (Cameron and Windmeijer, 1997), calling \link{rsq.kl}; 
         
