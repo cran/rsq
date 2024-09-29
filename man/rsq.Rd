@@ -4,7 +4,7 @@
 \description{Calculate the coefficient of determination, aka R^2, for  both linear and generalized linear (mixed) models.}
 \usage{rsq(fitObj,adj=FALSE,type=c('v','kl','sse','lr','n'))}
 \arguments{
-    \item{fitObj}{ an object of class "lm", "glm", "merMod", "lmerMod", or "lme"; usually a result of a call to \link{lm}, \link{glm}, \link{glm.nb}, \link{lmer} or \link{glmer} or \link{glmer.nb} in \link{lme4}, or \link{lme} in \link{nlme}.}
+    \item{fitObj}{ an object of class "lm", "glm", "merMod", "lmerMod", "lme", "deming", or "MCResultResampling"; usually a result of call to \link{lm}, \link{glm}, \link[MASS]{glm.nb}, \link[lme4]{lmer}, \link[lme4]{glmer}, \link[lme4]{glmer.nb}, \link[nlme]{lme}, \link[deming]{deming}, or \link[mcr]{mcreg}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
     \item{type}{  the type of R-squared (only applicable for generalized linear models):
     
@@ -41,9 +41,10 @@ Nagelkerke, N. J. D. (1991) A note on a general definition of the coefficient of
 
 Zhang, D. (2017). A coefficient of determination for generalized linear models. \emph{The American Statistician}, 71(4): 310-316.
 
-Zhang, D. (2020). Coefficients of determination for generalized linear mixed models. \emph{Technical Report}, 20-01, Department of Statistics, Purdue University.
+Zhang, D. (2022). Coefficients of determination for mixed-effects models.
+\emph{Journal of Agricultural, Biological and Environmental Statistics}, 27: 674-689.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq.partial},\link{pcor},\link{simglm}}.
 }

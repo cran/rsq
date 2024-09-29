@@ -4,7 +4,7 @@
 \description{Calculate the variance-function-based R-squared for generalized linear mixed models.}
 \usage{rsq.glmm(fitObj,adj=FALSE)}
 \arguments{
-    \item{fitObj}{ an object of class "glmerMod", usually, a result of a call to \link{glmer} or \link{glmer.nb} in \link{lme4}.}
+    \item{fitObj}{ an object of class "glmerMod", usually, a result of a call to \link[lme4]{glmer} or \link[lme4]{glmer.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
 }
 \details{
@@ -18,9 +18,10 @@ There are three types of R^2 calculated on the basis of observed response values
 \references{
 Zhang, D. (2017). A coefficient of determination for generalized linear models. \emph{The American Statistician}, 71(4): 310-316.
 
-Zhang, D. (2020). Coefficients of determination for mixed-effects models. arXiv:2007.08675.
+Zhang, D. (2022). Coefficients of determination for mixed-effects models.
+\emph{Journal of Agricultural, Biological and Environmental Statistics}, 27: 674-689.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{vresidual}, \link{rsq}, \link{rsq.v}}.
 }

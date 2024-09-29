@@ -4,7 +4,7 @@
 \description{The Kullback-Leibler-divergence-based R^2 for generalized linear models.}
 \usage{rsq.kl(fitObj,adj=FALSE)}
 \arguments{
-    \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
+    \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link[MASS]{glm.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
 }
 \details{
@@ -15,7 +15,7 @@ Cameron, A. C. and Windmeijer, A. G. (1997) An R-squared measure of goodness of 
 
 McCullagh, P. (1983) Quasi-likelihood functions. \emph{Annals of Statistics}, 11: 59-67.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.partial}, \link{pcor}}.
 }

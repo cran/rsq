@@ -20,7 +20,7 @@ Returned values include \code{yx} and \code{beta}.
 \references{
 Zhang, D. (2017). A coefficient of determination for generalized linear models. \emph{The American Statistician}, 71(4): 310-316.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.partial}, \link{pcor}}.
 }

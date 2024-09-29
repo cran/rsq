@@ -24,13 +24,12 @@ All subjects are between 11 and 15 year old. The data set was abstracted from a 
 Efron, B. (1978). Regression and ANOVA with zero-one data: measures of residual variation. \emph{JASA}, 73: 113-121.
 }
 \references{
-Remington, J.S., Efron, B., Cavanaugh, E., Simon,
-H.J., and Trejos, A. (1970). Studies on toxoplasmosis
-in El Salvador, prevalence and incidence of toxoplasmosis as
-measured by the Sabin-Feldman Dye test. \emph{Transactions of the
-Royal Society of Tropical Medicine and Hygiene}, 64: 252-267.
+Remington, J.S., Efron, B., Cavanaugh, E., Simon, H.J., and Trejos, A. (1970). 
+Studies on toxoplasmosis in El Salvador, prevalence and incidence of toxoplasmosis
+as measured by the Sabin-Feldman Dye test. 
+\emph{Transactions of the Royal Society of Tropical Medicine and Hygiene}, 64: 252-267.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.partial}, \link{pcor}, \link{simglm}}.
 }

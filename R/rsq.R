@@ -29,8 +29,14 @@ rsq<-function(fitObj,adj=FALSE,type=c('v','kl','sse','lr','n'))
     if( is.null(fitObj$model) ) warning("Set model=TRUE in deming(...)!")
     rsq <- 1-ifelse(adj,(var(fitObj$residuals)/var(fitObj$model[,1]))*(1+1/(fitObj$n-2)),
                     var(fitObj$residuals)/var(fitObj$model[,1]))
-  }
-  else
+  } else if( is(fitObj,"MCResultResampling")) {
+    tresid <- mcr::getResiduals(fitObj)
+    ty <- mcr::getData(fitObj)[,2]
+    if( anyNA(tresid)|anyNA(ty) ) warning("There are missing values in the data!")
+    tn <- length(ty)
+    rsq <- 1-ifelse(adj,(var(tresid)/var(ty))*(1+1/(tn-2)),
+                    var(tresid)/var(ty))
+  } else
     warning("Unsupported object!")
 
   rsq  
@@ -550,7 +556,7 @@ rsq.glmm<-function(fitObj,adj=FALSE)
     
     # SSE for GLM only
     f1 <- glm(glmf,family=negative.binomial(theta=theta,link=family(fitObj)$link),
-              data=getData(fitObj),weights=wt)
+              data=lme4::getData(fitObj),weights=wt)
     yf1 <- f1$fitted.values
     SSE <- sum(wt*vresidual(y,yf1,family=negative.binomial(theta))^2)
 
@@ -569,7 +575,7 @@ rsq.glmm<-function(fitObj,adj=FALSE)
     
     #SSE for GLM only
     f1 <- glm(glmf,family=binomial(link=family(fitObj)$link),
-              data=getData(fitObj),weights=wt)
+              data=lme4::getData(fitObj),weights=wt)
     yf1 <- f1$fitted.values
     SSE <- sum(nSuc*vresidual(tone,yf1,family=family(fitObj))^2+
                nFai*vresidual(1-tone,yf1,family=family(fitObj))^2)
@@ -583,7 +589,7 @@ rsq.glmm<-function(fitObj,adj=FALSE)
     SST <- sum(wt*vresidual(y,mean(y),family=family(fitObj))^2)
     
     # SSE for GLM only
-    f1 <- glm(glmf,family=family(fitObj),data=getData(fitObj),weights=wt)
+    f1 <- glm(glmf,family=family(fitObj),data=lme4::getData(fitObj),weights=wt)
     yf1 <- f1$fitted.values
     SSE <- sum(wt*vresidual(y,yf1,family=family(fitObj))^2)
     

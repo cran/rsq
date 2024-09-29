@@ -22,9 +22,10 @@ Returned values include \code{yx}, \code{beta}, and \code{u}.
 \item{u}{ the random intercepts.}
 }
 \references{
-Zhang, D. (2020). Coefficients of determination for generalized linear mixed models. \emph{Technical Report}, 20-01, Department of Statistics, Purdue University.
+Zhang, D. (2022). Coefficients of determination for mixed-effects models.
+\emph{Journal of Agricultural, Biological and Environmental Statistics}, 27: 674-689.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.lmm}, \link{rsq.glmm}, \link{simglm}},
 }

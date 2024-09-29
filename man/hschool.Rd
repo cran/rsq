@@ -22,7 +22,7 @@ Recorded are the number of days of absence, gender, and two test scores of 316 h
 Some school administrators studied the attendance behavior of high school juniors at two schools. Predictors of the number of days of absence include gender of the student and standardized test scores in math and language arts. The original source of this data set is unknown.
 }
 \source{UCLA IDRE Statistical Consulting Group for data analysis.}
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.partial}, \link{pcor}, \link{simglm}}.
 }

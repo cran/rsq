@@ -4,7 +4,7 @@
 \description{The sum-of-squared-errors-based R^2 for generalized linear models.}
 \usage{rsq.sse(fitObj,adj=FALSE)}
 \arguments{
-    \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
+    \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link[MASS]{glm.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
 }
 \details{
@@ -13,7 +13,7 @@ This version of R^2 was proposed by Efron (1978). It is calculated on the basis 
 \references{
 Efron, B. (1978) Regression and ANOVA with zero-one data: measures of residual variation. \emph{Journal of the American Statistical Association}, 73: 113-121.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.partial}, \link{pcor}}.
 }

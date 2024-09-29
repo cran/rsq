@@ -11,12 +11,12 @@ rsq.partial(objF,objR=NULL,adj=FALSE,type=c('v','kl','sse','lr','n'))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{objF}{  an object of class "lm" or "glm", a result of a call to \link{lm}, \link{glm}, or \link{glm.nb} to fit the full model.}
-  \item{objR}{  an object of class "lm" or "glm", a result of a call to \link{lm}, \link{glm}, or \link{glm.nb} to fit the reduced model.}
+  \item{objF}{  an object of class "lm" or "glm", a result of a call to \link{lm}, \link{glm}, or \link[MASS]{glm.nb} to fit the full model.}
+  \item{objR}{  an object of class "lm" or "glm", a result of a call to \link{lm}, \link{glm}, or \link[MASS]{glm.nb} to fit the reduced model.}
   \item{adj}{ logical; if TRUE, calculate the adjusted partial R^2.}
   \item{type}{  the type of R-squared:
   
-  'v' (default) -- variance-function-based (Zhang, 2016), calling \link{rsq.v};
+  'v' (default) -- variance-function-based (Zhang, 2017), calling \link{rsq.v};
   
   'kl' -- KL-divergence-based (Cameron and Windmeijer, 1997), calling \link{rsq.kl}; 
 
@@ -52,7 +52,7 @@ Nagelkerke, N. J. D. (1991) A note on a general definition of the coefficient of
 
 Zhang, D. (2017). A coefficient of determination for generalized linear models. \emph{The American Statistician}, 71(4): 310-316.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{pcor}}.
 }

@@ -4,7 +4,7 @@
 \description{Corrected likelihood-ratio-based R^2 for generalized linear models.}
 \usage{rsq.n(fitObj,adj=FALSE)}
 \arguments{
-    \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link{glm.nb}.}
+    \item{fitObj}{ an object of class "lm" or "glm", usually, a result of a call to \link{lm}, \link{glm}, or \link[MASS]{glm.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
 }
 \details{
@@ -20,7 +20,7 @@ Magee, L. (1990) R^2 measures based on Wald and likelihood ratio joint significa
 
 Nagelkerke, N. J. D. (1991) A note on a general definition of the coefficient of determination. \emph{Biometrika}, 78: 691-692.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.partial}, \link{pcor}, \link{rsq.lr}}.
 }

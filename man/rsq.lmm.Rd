@@ -4,7 +4,7 @@
 \description{Calculate the R-squared for linear mixed models.}
 \usage{rsq.lmm(fitObj,adj=FALSE)}
 \arguments{
-    \item{fitObj}{ an object of class "merMod" or "lmerMod" or "lme", usually, a result of a call to \link{lmer} in \link{lme4}, or \link{lme} in \link{nlme}.}
+    \item{fitObj}{ an object of class "merMod" or "lmerMod" or "lme", usually, a result of a call to \link[lme4]{lmer}, or \link[nlme]{lme}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
 }
 \details{
@@ -16,9 +16,10 @@ There are three types of R^2 calculated on the basis of observed response values
   \item{R_R^2}{proportion of variation explained by the random-effects factors.}
 }
 \references{
-Zhang, D. (2020). Coefficients of determination for mixed-effects models. arXiv:2007.0867.
+Zhang, D. (2022). Coefficients of determination for mixed-effects models.
+\emph{Journal of Agricultural, Biological and Environmental Statistics}, 27: 674-689.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.v}}.
 }

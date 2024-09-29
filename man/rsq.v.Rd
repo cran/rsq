@@ -4,7 +4,7 @@
 \description{Calculate the variance-function-based R-squared for generalized linear (mixed) models.}
 \usage{rsq.v(fitObj,adj=FALSE)}
 \arguments{
-    \item{fitObj}{ an object of class "lm", "glm", "lme", or "glmerMod", usually, a result of a call to \link{lm}, \link{glm}, \link{glm.nb}, \link{glmer}, or \link{glmer.nb}.}
+    \item{fitObj}{ an object of class "lm", "glm", "lme", or "glmerMod", usually, a result of a call to \link{lm}, \link{glm}, \link[MASS]{glm.nb}, \link[lme4]{glmer}, or \link[lme4]{glmer.nb}.}
     \item{adj}{ logical; if TRUE, calculate the adjusted R^2.}
 }
 \details{
@@ -20,7 +20,7 @@ Zhang, D. (2017). A coefficient of determination for generalized linear models. 
 
 Zhang, D. (2020). Coefficients of determination for mixed-effects models. arXiv:2007.08675.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{vresidual}, \link{rsq}, \link{rsq.glmm}, \link{rsq.partial}, \link{pcor}}.
 }

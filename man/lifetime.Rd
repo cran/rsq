@@ -21,7 +21,7 @@ This data set is discussed by Wang et al. (1992).
 \source{
 Wang, H., Ma, B., and Shi, J. (1992). Estimation of environmental factors for the inverse gaussian distribution. \emph{Microelectron. Reliab.}, 32: 931-934.
 }
-\author{Dabao Zhang, Department of Statistics, Purdue University}
+\author{Dabao Zhang, Department of Epidemiology and Biostatistics, University of California, Irvine}
 \seealso{
 \code{\link{rsq}, \link{rsq.partial}, \link{pcor}, \link{simglm}}.
 }\examples{
